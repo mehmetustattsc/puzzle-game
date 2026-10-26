@@ -52,3 +52,17 @@ jobs:
           path: _site
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  lighthouse:
+    # speed, accessibility and "installable app" scores of the live page, report linked in the run summary
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wait for the new version to go live
+        run: sleep 45
+      - uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: https://mehmetustattsc.github.io/puzzle-game/
+          uploadArtifacts: true
+          temporaryPublicStorage: true
