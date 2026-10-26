@@ -239,6 +239,49 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 /* spring sky behind the home pages: dark text on the open sky, cards stay dark */
 .page-in h2{color:#E08A12;text-shadow:0 2px 0 rgba(255,255,255,.7)}.page-in>.lead,.page-in>.note{color:#2E3A46!important;font-weight:600}
 .hero h1{text-shadow:0 3px 0 var(--amber-deep),0 0 14px rgba(255,255,255,.85)}.hero p{color:#2E3A46}
+
+/* ---- celebration effects (fx layer above everything, never catches taps) ---- */
+.fx{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.fx-rays{position:absolute;width:360px;height:360px;margin:-180px 0 0 -180px;border-radius:50%;
+  background:repeating-conic-gradient(rgba(255,226,130,.75) 0 9deg,rgba(255,226,130,0) 9deg 20deg);
+  -webkit-mask:radial-gradient(circle,#000 18%,transparent 68%);mask:radial-gradient(circle,#000 18%,transparent 68%);
+  animation:fxSpin 7s linear infinite,fxRaysIn .45s cubic-bezier(.2,1.4,.4,1) both}
+.fx-rays.out{animation:fxSpin 7s linear infinite,fxFadeOut .5s ease-in forwards}
+.fx-spark{position:absolute;width:var(--s,10px);height:var(--s,10px);margin:calc(var(--s,10px)/-2) 0 0 calc(var(--s,10px)/-2);
+  background:var(--c,#FFE066);clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);
+  animation:fxSpark var(--d,.9s) cubic-bezier(.1,.7,.3,1) forwards}
+.fx-coin{position:absolute;width:24px;height:24px;margin:-12px 0 0 -12px;will-change:transform,opacity;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+.fx-banner{position:absolute;left:50%;top:34%;display:flex;flex-direction:column;align-items:center;gap:4px;transform:translate(-50%,-50%);
+  animation:fxBanner 1.9s cubic-bezier(.2,.9,.3,1) forwards}
+.fx-banner b{font:800 clamp(34px,10vw,52px)/1 var(--font-display);color:#fff;text-shadow:0 3px 0 #C9781A,0 0 18px rgba(0,0,0,.45);white-space:nowrap}
+.fx-banner span{font:800 16px var(--font-body);color:#fff;background:rgba(22,25,30,.75);padding:3px 12px;border-radius:999px}
+.fx-stamp{margin-top:6px;font:800 22px/1 var(--font-display);letter-spacing:.06em;color:#fff;padding:6px 16px 4px;border:3px solid #fff;border-radius:10px;
+  background:var(--sc,#E53935);transform:rotate(-8deg);box-shadow:0 4px 0 rgba(0,0,0,.3);animation:fxStamp .5s .35s cubic-bezier(.3,1.6,.5,1) both}
+.fx-gift{position:absolute;left:50%;top:44%;width:150px;height:150px;margin:-75px 0 0 -75px}
+.fx-gift svg{width:100%;height:100%;overflow:visible}
+.fx-gift .box{animation:fxShake .6s ease-in-out 2;transform-origin:75px 140px;transform-box:view-box}
+.fx-gift .lid{animation:fxLid .55s 1.2s cubic-bezier(.3,1.4,.5,1) forwards;transform-origin:75px 60px;transform-box:view-box}
+.fx-gift.out{animation:fxFadeOut .45s ease-in forwards}
+.fx-prize{position:absolute;display:flex;align-items:center;justify-content:center;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:#fff;
+  box-shadow:0 3px 10px rgba(0,0,0,.3);animation:fxPrize 1.3s cubic-bezier(.2,1.2,.4,1) forwards}
+.fx-prize svg{width:30px;height:30px}
+.fx-bigstar{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;animation:fxBigStar 1.4s cubic-bezier(.2,1.3,.4,1) forwards}
+.raysWrap{position:relative}.raysWrap .rays{position:absolute;left:50%;top:58%;width:260px;height:260px;margin:-130px 0 0 -130px;border-radius:50%;z-index:0;pointer-events:none;
+  background:repeating-conic-gradient(rgba(255,226,130,.32) 0 9deg,rgba(255,226,130,0) 9deg 20deg);-webkit-mask:radial-gradient(circle,#000 20%,transparent 66%);mask:radial-gradient(circle,#000 20%,transparent 66%);animation:fxSpin 9s linear infinite}
+.raysWrap .mwrap{position:relative;z-index:1}
+.pulse{animation:fxPulse .35s ease-out}
+@keyframes fxSpin{to{transform:rotate(360deg)}}
+@keyframes fxRaysIn{from{transform:scale(.2);opacity:0}}
+@keyframes fxFadeOut{to{opacity:0}}
+@keyframes fxSpark{0%{transform:translate(0,0) scale(.3) rotate(0);opacity:1}70%{opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(1) rotate(160deg);opacity:0}}
+@keyframes fxBanner{0%{transform:translate(-50%,-50%) scale(.5);opacity:0}14%{transform:translate(-50%,-50%) scale(1.08);opacity:1}24%{transform:translate(-50%,-50%) scale(1)}78%{transform:translate(-50%,-50%) scale(1);opacity:1}100%{transform:translate(-50%,-80%) scale(.92);opacity:0}}
+@keyframes fxStamp{from{transform:rotate(-8deg) scale(2.6);opacity:0}to{transform:rotate(-8deg) scale(1);opacity:1}}
+@keyframes fxShake{0%,100%{transform:rotate(0)}20%{transform:rotate(-9deg)}40%{transform:rotate(8deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(4deg)}}
+@keyframes fxLid{to{transform:translate(18px,-70px) rotate(28deg);opacity:0}}
+@keyframes fxPrize{0%{transform:translate(0,30px) scale(.2);opacity:0}40%{opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(1);opacity:1}}
+@keyframes fxBigStar{0%{transform:scale(.1) rotate(-60deg);opacity:0}45%{transform:scale(1.15) rotate(8deg);opacity:1}70%{transform:scale(1) rotate(0)}100%{transform:scale(1.05);opacity:0}}
+@keyframes fxPulse{50%{transform:scale(1.25)}}
+@media (prefers-reduced-motion:reduce){.fx-rays,.raysWrap .rays{animation:none}.fx-spark,.fx-coin{display:none}}
 </style>
 
 </head>
@@ -1153,7 +1196,7 @@ function startLevel(L){
   getLevel(L).then(lv=>{clearTimeout(tm);if(req!==startReq)return;
     if(!lv){openModal(`<h2>${t('errT')}</h2><p>${t('errTxt')}</p><button class="btn" id="mRetryGen" type="button">${t('retry')}</button>`);document.getElementById('mRetryGen').onclick=()=>{levelJobs.delete(L);startLevel(L)};return}
     beginLevel(L,cloneLv(lv));getLevel(L+1).then(()=>getLevel(L+2));
-    const tl=tutsFor(G);if(tl.length){setMode('tut');showTuts(tl,()=>{closeModal();setMode(null)})}
+    const tl=tutsFor(G);if(tl.length){setMode('tut');showTuts(tl,()=>{closeModal();setMode(null);fxLevelBanner()})}else setTimeout(fxLevelBanner,350);
   });
 }
 function beginLevel(L,lv){
@@ -1199,7 +1242,7 @@ function hud(){
   syncLives();
   const inf=infActive();document.getElementById('lives').textContent=inf?'∞':save.lives;
   document.getElementById('lifeTimer').textContent=inf?infLeft():save.lives>=MAX_LIVES?t('full'):lifeLeft();
-  document.getElementById('honey').textContent=fmt(save.honey);
+  document.getElementById('honey').textContent=fmt(honeyShown??save.honey);
   document.getElementById('bSpeed').classList.toggle('on',!!(save.speed2||(G&&G.auto2)));
   {const left=(G?G.free2x:FREE_2X_PER_LEVEL)+save.bank2x,m=Math.floor(left/60),sec=Math.floor(left%60);document.getElementById('speedLeft').textContent=G&&G.auto2?t('auto'):left>0?m+':'+String(sec).padStart(2,'0'):t('noTime')}
   if(!G)return;
@@ -1210,6 +1253,47 @@ function hud(){
   document.getElementById('progBar').style.width=(100*G.cleared/G.total)+'%';
 }
 setInterval(hud,500);
+/* ================= celebration effects =================
+   Small DOM/CSS animations on a layer above everything (pointer-events off): rays and sparkles, honey coins flying to
+   the honey counter while it counts up, a gift box that opens on the daily reward, a big star for album stars and a
+   level banner with a stamp on hard levels. */
+let honeyShown=null;
+const HEX_COIN='<svg viewBox="0 0 24 24"><path d="M12 1.5l9 5.2v10.6L12 22.5l-9-5.2V6.7z" fill="#F2B544" stroke="#C9781A" stroke-width="1.8"/><path d="M12 6l4.8 2.8v5.6L12 17.2l-4.8-2.8V8.8z" fill="#FFD98A"/></svg>';
+const fxLayer=()=>{let r=document.getElementById('fx');if(!r){r=document.createElement('div');r.id='fx';r.className='fx';document.body.appendChild(r)}return r};
+const fxCenter=el=>{const b=(typeof el==='string'?document.querySelector(el):el)?.getBoundingClientRect();return b&&b.width?{x:b.left+b.width/2,y:b.top+b.height/2}:null};
+const fxReduced=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}};
+function fxSparks(x,y,n=18,cols=['#FFE066','#FFFFFF','#F2A93B','#FF9EC4','#7FE3F0']){const L=fxLayer();
+  for(let i=0;i<n;i++){const e=document.createElement('i');e.className='fx-spark';const a=Math.random()*Math.PI*2,d=60+Math.random()*110;
+    e.style.cssText=`left:${x}px;top:${y}px;--dx:${Math.cos(a)*d}px;--dy:${Math.sin(a)*d}px;--s:${8+Math.random()*10}px;--c:${cols[i%cols.length]};--d:${.7+Math.random()*.5}s`;L.appendChild(e);setTimeout(()=>e.remove(),1300)}}
+function fxRays(x,y,ms=1500){const e=document.createElement('div');e.className='fx-rays';e.style.left=x+'px';e.style.top=y+'px';fxLayer().appendChild(e);
+  setTimeout(()=>e.classList.add('out'),ms);setTimeout(()=>e.remove(),ms+520);return e}
+function fxCount(from,to,ms=900,el){honeyShown=from;const t0=performance.now();const step=now=>{const k=Math.min(1,(now-t0)/ms);honeyShown=Math.round(from+(to-from)*(1-Math.pow(1-k,3)));
+    ['honey','hHoney'].forEach(id=>{const h=document.getElementById(id);if(h)h.textContent=fmt(honeyShown)});if(k<1)requestAnimationFrame(step);else honeyShown=null};requestAnimationFrame(step)}
+/* coins fly from one element to the honey counter; the counter ticks up from `from` to `to` while they land */
+function fxCoins(fromEl,toId,from,to,n=10){const a=fxCenter(fromEl),tgt=document.getElementById(toId),b=fxCenter(tgt);
+  if(!a||!b||fxReduced()){fxCount(from,to,400);return}
+  honeyShown=from;const L=fxLayer();let landed=0;
+  for(let i=0;i<n;i++){const c=document.createElement('div');c.className='fx-coin';c.innerHTML=HEX_COIN;const sx=a.x+(Math.random()-.5)*70,sy=a.y+(Math.random()-.5)*30;
+    c.style.cssText=`left:${sx}px;top:${sy}px;transform:scale(.3);opacity:0;transition:transform .7s cubic-bezier(.5,-0.25,.6,1),opacity .2s`;L.appendChild(c);
+    setTimeout(()=>{c.style.opacity='1';c.style.transform=`translate(${b.x-sx}px,${b.y-sy}px) scale(.8) rotate(${360+Math.random()*180}deg)`},40+i*65);
+    setTimeout(()=>{c.remove();landed++;if(tgt){tgt.closest('.pill')?.classList.remove('pulse');void tgt.offsetWidth;tgt.closest('.pill')?.classList.add('pulse')}
+      if(landed%3===1)sfx('coin');if(landed===1)fxCount(from,to,n*65+500)},40+i*65+720)}}
+function fxWin(){const m=fxCenter('#card .mwrap');if(m){fxSparks(m.x,m.y,22)}}
+function fxLevelBanner(){if(!G)return;const L=fxLayer(),e=document.createElement('div');e.className='fx-banner';
+  const stamp=G.tier>0?`<div class="fx-stamp" style="--sc:${G.tier===2?'#7E3FD0':'#E53935'}">${t('tiers')[G.tier].toLocaleUpperCase(LOCALE[lang()])}</div>`:'';
+  e.innerHTML=`<b>${t('levelN',G.L+1)}</b><span>${nameOf(G.name)}</span>${stamp}`;L.appendChild(e);if(G.tier>0)setTimeout(()=>{sfx('key');G.shake=.6},420);setTimeout(()=>e.remove(),2000)}
+function fxGift(prizes,done){if(fxReduced()){done&&done();return}const L=fxLayer(),g=document.createElement('div');g.className='fx-gift';
+  g.innerHTML=`<svg viewBox="0 0 150 150"><g class="box"><rect x="22" y="68" width="106" height="74" rx="10" fill="#E53935" stroke="#8E1F1C" stroke-width="4"/><rect x="66" y="68" width="18" height="74" fill="#FFD54F"/></g>
+    <g class="lid"><rect x="14" y="48" width="122" height="26" rx="8" fill="#F05A57" stroke="#8E1F1C" stroke-width="4"/><rect x="66" y="48" width="18" height="26" fill="#FFD54F"/>
+    <path d="M75 48c-14-22-38-16-30-2 4 7 18 4 30 2zm0 0c14-22 38-16 30-2-4 7-18 4-30 2z" fill="#FFD54F" stroke="#C9781A" stroke-width="3"/></g></svg>`;
+  L.appendChild(g);sfx('tap');setTimeout(()=>sfx('tap'),600);
+  setTimeout(()=>{const c=fxCenter(g);if(c){fxRays(c.x,c.y,1400);fxSparks(c.x,c.y,24);sfx('win');
+      prizes.forEach((ic,i)=>{const p=document.createElement('div');p.className='fx-prize';p.innerHTML=ic;const ang=-Math.PI/2+(i-(prizes.length-1)/2)*0.9;
+        p.style.cssText=`left:${c.x}px;top:${c.y}px;--dx:${Math.cos(ang)*95}px;--dy:${Math.sin(ang)*95}px;animation-delay:${i*.08}s`;L.appendChild(p);setTimeout(()=>p.remove(),2300)})}},1250);
+  setTimeout(()=>g.classList.add('out'),2000);setTimeout(()=>{g.remove();done&&done()},2450)}
+function fxBigStar(el){const c=fxCenter(el)||{x:innerWidth/2,y:innerHeight/2};const L=fxLayer(),s2=document.createElement('div');s2.className='fx-bigstar';
+  s2.innerHTML='<svg viewBox="0 0 48 48"><path d="M24 3l6.2 12.6 13.9 2-10 9.8 2.4 13.8L24 34.6 11.5 41.2l2.4-13.8-10-9.8 13.9-2z" fill="#FFD54F" stroke="#C9781A" stroke-width="2.5" stroke-linejoin="round"/></svg>';
+  s2.style.left=c.x+'px';s2.style.top=c.y+'px';L.appendChild(s2);fxRays(c.x,c.y,1100);fxSparks(c.x,c.y,26);setTimeout(()=>s2.remove(),1500)}
 let toastT=0;function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1600)}
 function spend(n){if(save.honey<n){openShop(t('needHoney',fmt(n),fmt(save.honey)));return false}save.honey-=n;persist();hud();sfx('coin');return true}
 
@@ -1337,14 +1421,15 @@ function win(){
   for(let i=0;i<110;i++)G.confetti.push({x:W/2,y:Lr.boardH*0.5,vx:(Math.random()-.5)*600,vy:-200-Math.random()*400,rot:0,vr:(Math.random()-.5)*10,life:1.4+Math.random(),col:cs[i%cs.length],s:4+Math.random()*5});
   sfx('win');save.streak++;save.best=Math.max(save.best||0,save.streak);if(G.tier>0)save.hard=(save.hard||0)+1;save.wins=(save.wins||0)+1;save.inLevel=null;const base=TIER_REWARD[G.tier],bonus=save.streak>=2?Math.min(save.streak-1,5)*STREAK_STEP:0;
   const t2=0;
-  save.honey+=base+bonus;save.level=Math.max(save.level,G.L+1);persist();hud();addAlbum(G.name);
+  const h0=save.honey;honeyShown=h0;save.honey+=base+bonus;save.level=Math.max(save.level,G.L+1);persist();hud();addAlbum(G.name);
   setTimeout(()=>{
-    openModal(`${mascotBlock('happy',pickOne(t('winLines')))}<h2>${t('collected',nameOf(G.name))}</h2><canvas id="winPic"></canvas>
-      <div class="rows"><span>${t('tierReward',t('tiers')[G.tier])}</span><b>${t('plusHoney',fmt(base))}</b>${bonus?`<span>${t('streakReward',save.streak)}</span><b>${t('plusHoney',fmt(bonus))}</b>`:''}${t2?`<span>${t('x2time')}</span><b>${t('plusMin',t2/60)}</b>`:''}</div>
+    openModal(`<div class="raysWrap"><div class="rays"></div>${mascotBlock('happy',pickOne(t('winLines')))}</div><h2>${t('collected',nameOf(G.name))}</h2><canvas id="winPic"></canvas>
+      <div class="rows" id="rwRow"><span>${t('tierReward',t('tiers')[G.tier])}</span><b>${t('plusHoney',fmt(base))}</b>${bonus?`<span>${t('streakReward',save.streak)}</span><b>${t('plusHoney',fmt(bonus))}</b>`:''}${t2?`<span>${t('x2time')}</span><b>${t('plusMin',t2/60)}</b>`:''}</div>
       <button class="btn" id="mDouble" type="button">${t('doubleAd',fmt(base+bonus))}</button>
       <button class="btn ghost" id="mNext" type="button">${t('next')}</button><button class="btn ghost" id="mHome" type="button">${t('home')}</button>
       <p class="note">${t('adNote')}</p>`);
-    document.getElementById('mDouble').onclick=e=>{save.honey+=base+bonus;persist();hud();e.target.disabled=true;e.target.textContent=t('doubled');sfx('coin')};
+    setTimeout(()=>{fxWin();fxCoins('#rwRow','honey',h0,save.honey,Math.min(14,6+Math.round((base+bonus)/12)))},250);
+    document.getElementById('mDouble').onclick=e=>{const a=save.honey;save.honey+=base+bonus;persist();e.target.disabled=true;e.target.textContent=t('doubled');fxCoins(e.target,'honey',a,save.honey,10)};
     document.getElementById('mHome').onclick=()=>{G.state='done';showHome()};
     drawShape(document.getElementById('winPic'),G,170);
     document.getElementById('mNext').onclick=()=>startLevel(G.L+1);
@@ -1731,7 +1816,9 @@ function showDaily(){const idx=save.dailyIdx||0,ready=!!save.dailyReady;
     const ic=['h','x2','inf'].filter(k=>r[k]).map(k=>ICS[k]).join('');return `<div class="day ${st}${i===6?' big':''}"><b>${i===6?t('weekly'):t('dayN',i+1)}</b><span class="ic">${ic}</span><span>${rewardText(r)}</span></div>`}).join('');
   openModal(`${mascotBlock(ready?'happy':'idle',ready?t('dailyHi'):t('dailyCome'))}<h2>${t('dailyCalT')}</h2><div class="cal">${tiles}</div><p class="note">${t('dailyInfo')}</p>
     ${ready?`<button class="btn" id="dClaimAd" type="button">${t('claimAd')}</button><button class="btn ghost" id="dClaim" type="button">${t('claim')}: ${rewardText(DAILY[idx])}</button>`:`<p>${t('tomorrow',rewardText(DAILY[idx]))}</p><button class="btn ghost" id="dClose" type="button">${t('close')}</button>`}`);
-  const claim=m=>{grant(DAILY[idx],m);save.dailyReady=false;save.dailyClaim=today;save.dailyIdx=(idx+1)%7;persist();sfx('win');toast(rewardText(DAILY[idx],m));closeModal();homeHud()};
+  const claim=m=>{const r=DAILY[idx],h0=save.honey;grant(r,m);save.dailyReady=false;save.dailyClaim=today;save.dailyIdx=(idx+1)%7;persist();closeModal();
+    honeyShown=h0;homeHud();const prizes=['h','x2','inf'].filter(k=>r[k]).map(k=>ICS[k]);
+    fxGift(prizes,()=>{toast(rewardText(r,m));if(save.honey>h0)fxCoins('#fx','hHoney',h0,save.honey,10);else{honeyShown=null;homeHud()}})};
   if(ready){document.getElementById('dClaimAd').onclick=()=>claim(2);document.getElementById('dClaim').onclick=()=>claim(1)}else document.getElementById('dClose').onclick=closeModal}
 /* home background: a night meadow with flowers, a faint honeycomb sky and drifting fireflies */
 /* spring meadow behind the home pages: soft sky, sun, drifting clouds, green hills full of flowers and a few bees */
@@ -1788,7 +1875,7 @@ function renderAlbum(){const tot=ALBUMS.reduce((a,b)=>a+b.items.length,0),got=AL
   el.querySelectorAll('canvas[data-prev]').forEach(c=>{const a=ALBUMS[+c.dataset.prev],first=a.items.find(n=>albCount(n)>0);drawSticker(c,first||a.items[0],64,!!first);c.style.width='64px';c.style.height='auto'});
   el.querySelectorAll('[data-alb]').forEach(d=>d.onclick=e=>{if(e.target.closest('[data-claim]'))return;showAlbumDetail(ALBUMS[+d.dataset.alb])});
   el.querySelectorAll('[data-claim]').forEach(b=>b.onclick=()=>{const a=ALBUMS[+b.dataset.claim];save.albumClaimed=save.albumClaimed||{};const sIdx=(save.albumClaimed[a.id]||0);
-    grant(STAR_RW[sIdx]);save.albumClaimed[a.id]=sIdx+1;persist();sfx('win');toast(t('albumRw',albName(a),rewardText(STAR_RW[sIdx])));renderAlbum()});
+    fxBigStar(b);grant(STAR_RW[sIdx]);save.albumClaimed[a.id]=sIdx+1;persist();sfx('win');toast(t('albumRw',albName(a),rewardText(STAR_RW[sIdx])));renderAlbum()});
   const badge=document.getElementById('albumBadge');if(badge)badge.hidden=!ALBUMS.some(albClaimable)}
 function showAlbumDetail(a){const st=albStars(a);
   openModal(`<h2>${albName(a)}</h2><p><span style="color:#F2B544;letter-spacing:2px">${'★'.repeat(st)}</span><span style="color:#4A525D;letter-spacing:2px">${'★'.repeat(3-st)}</span></p>
@@ -1859,7 +1946,7 @@ function showHome(){if(!document.getElementById('homeBg').firstChild)buildHomeBg
 function homeHud(){
   syncLives();
   document.getElementById('hLives').textContent=infActive()?'∞ '+infLeft():save.lives;
-  document.getElementById('hHoney').textContent=fmt(save.honey);
+  document.getElementById('hHoney').textContent=fmt(honeyShown??save.honey);
   const left=save.bank2x,m=Math.floor(left/60),sc=Math.floor(left%60);document.getElementById('h2x').textContent=m+':'+String(sc).padStart(2,'0');
   const resume=G&&G.state==='play'&&G.cleared>0;
   const L=resume?G.L:save.level,tier=tierOf(L);
