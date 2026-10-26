@@ -4,3 +4,4 @@ playwright-report/
 tools/emoji/work/
 *.log
 .DS_Store
+dist/

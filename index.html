@@ -282,6 +282,11 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 @keyframes fxBigStar{0%{transform:scale(.1) rotate(-60deg);opacity:0}45%{transform:scale(1.15) rotate(8deg);opacity:1}70%{transform:scale(1) rotate(0)}100%{transform:scale(1.05);opacity:0}}
 @keyframes fxPulse{50%{transform:scale(1.25)}}
 @media (prefers-reduced-motion:reduce){.fx-rays,.raysWrap .rays{animation:none}.fx-spark,.fx-coin{display:none}}
+.adov{position:fixed;inset:0;z-index:80;background:rgba(8,10,13,.9);display:flex;align-items:center;justify-content:center;padding:16px;animation:fade .2s}
+.adcard{width:min(340px,100%);background:var(--wax);border:1px solid var(--wax-2);border-radius:20px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.adcard p{margin:0;color:var(--muted);font-size:13px;line-height:1.4}.adtag{align-self:flex-start;font:800 10px var(--font-body);letter-spacing:.08em;text-transform:uppercase;background:#FDD835;color:#2A1608;border-radius:6px;padding:2px 7px}
+.adart .mascot{width:96px;height:96px}.adbar{width:100%;height:10px;border-radius:10px;background:var(--wax-2);overflow:hidden}.adbar i{display:block;width:0;height:100%;background:linear-gradient(90deg,var(--amber-deep),var(--amber))}
+.adleft{font-family:var(--font-display);font-size:18px;color:var(--amber)}.adskip{width:100%;font:800 15px var(--font-body);border:0;border-radius:14px;padding:12px;background:var(--wax-2);color:var(--ink);cursor:pointer}
 </style>
 
 </head>
@@ -1002,10 +1007,12 @@ setTimeout(async()=>{try{if(!window.claude||typeof window.claude.use!=='function
    stores no personal data. Events: app opens with days since first visit (retention), level start/win/lose/quit,
    shop opens and purchase taps (test mode, to measure interest). */
 const GC_CODE='mehmetusta';// e.g. 'petekustasi' for https://petekustasi.goatcounter.com
-const ON_WEB=/(\.github\.io|\.pages\.dev)$/.test(location.hostname);
+/* where the game is running: our own site, itch.io (games run on itch.zone / hwcdn.net inside an iframe) or neither */
+const PLATFORM=/(\.github\.io|\.pages\.dev)$/.test(location.hostname)?'web':/(\.itch\.zone|\.itch\.io|\.hwcdn\.net)$/.test(location.hostname)?'itch':'';
+const ON_WEB=!!PLATFORM;
 let gcQ=[];
-function track(name){try{if(!GC_CODE||!ON_WEB)return;const gc=window.goatcounter;if(gc&&gc.count)gc.count({path:name,title:name,event:true});else gcQ.push(name)}catch(e){}}
-if(GC_CODE&&ON_WEB){const sc=document.createElement('script');sc.async=true;sc.src='https://gc.zgo.at/count.js';sc.dataset.goatcounter='https://'+GC_CODE+'.goatcounter.com/count';sc.dataset.goatcounterSettings='{"no_onload":true}';
+function track(name){try{if(!GC_CODE||!ON_WEB)return;const path=PLATFORM==='web'?name:PLATFORM+'/'+name,gc=window.goatcounter;if(gc&&gc.count)gc.count({path,title:path,event:true});else gcQ.push(name)}catch(e){}}
+if(GC_CODE&&ON_WEB){const sc=document.createElement('script');sc.async=true;sc.src='https://gc.zgo.at/count.js';sc.dataset.goatcounter='https://'+GC_CODE+'.goatcounter.com/count';sc.dataset.goatcounterSettings='{"no_onload":true,"allow_frame":true}';
   sc.onload=()=>{const q=gcQ;gcQ=[];q.forEach(track)};document.head.appendChild(sc)}
 /* ================= error reports (Sentry, EU region) =================
    Only on the real web address. The SDK is fetched after the page has loaded; errors that happen before that are kept
@@ -1019,7 +1026,7 @@ if(ON_WEB&&SENTRY_DSN){
   window.addEventListener('unhandledrejection',e=>{if(!(window.Sentry&&window.Sentry.captureException))reportError(e.reason instanceof Error?e.reason:new Error(String(e.reason)))});
   window.addEventListener('load',()=>{const sc=document.createElement('script');sc.src='https://browser.sentry-cdn.com/11.4.0/bundle.min.js';sc.crossOrigin='anonymous';sc.async=true;
     sc.onload=()=>{try{window.Sentry.init({dsn:SENTRY_DSN,release:'petek-ustasi@'+APP_VERSION,environment:'production',sendDefaultPii:false,
-        beforeSend(ev){try{ev.tags=Object.assign({},ev.tags,{game_level:G?String(G.L+1):'home',saved_level:String(save.level+1),lang:lang(),lv_ver:String(LV_VER)})}catch(e){}return ev}});
+        beforeSend(ev){try{ev.tags=Object.assign({},ev.tags,{game_level:G?String(G.L+1):'home',saved_level:String(save.level+1),lang:lang(),lv_ver:String(LV_VER),platform:PLATFORM})}catch(e){}return ev}});
       errBuf.splice(0).forEach(([e,x])=>window.Sentry.captureException(e,x?{extra:x}:undefined));
       if(/[?&]sentrytest=1/.test(location.search))setTimeout(()=>{throw new Error('Petek Ustası Sentry test error')},500)}catch(e){}};
     document.head.appendChild(sc)})}
@@ -1041,7 +1048,7 @@ tr:{brand:'Petek Ustası',mascot:'Vızvız',langBtn:'TR',home:'Ana sayfa',lives:
  waiting:'bekliyor',hive:'KOVAN',hint1:'Kenardaki renge uyan sıraya dokun',loading:'Çiçekler hazırlanıyor…',errT:'Bir sorun oldu',errTxt:'Bölüm hazırlanamadı.',retry:'Tekrar dene',
  unlocked:'Kilit açıldı!',locked:'Bu sıra kilitli: anahtarı aç',linkBlocked:'Bağlı arıların önü açık olmalı',x2over:'2x süren bitti',auto2:'Sırada arı kalmadı: otomatik 3x',
  winLines:['Oley!','Harikasın!','Bal gibi oldu!','Vız vız, süper!'],collected:'{0} toplandı!',tierReward:'{0} bölüm ödülü',streakReward:'Seri ödülü ({0} bölüm üst üste)',x2time:'2x hız süresi',plusHoney:'+{0} bal',plusMin:'+{0} dk',
- doubleAd:'Reklam izle, balı 2 katına çıkar (+{0})',doubled:'Bal 2 katına çıktı',next:'Sonraki seviye',adNote:'Reklam butonu prototipte direkt ödül verir.',adNote2:'Reklam butonu prototipte direkt ödül verir. Yayındaki sürümde ödüllü reklam açar.',
+ doubleAd:'Reklam izle, balı 2 katına çıkar (+{0})',doubled:'Bal 2 katına çıktı',next:'Sonraki seviye',adNote:'Test sürümü: reklam yerine 15 saniyelik bir bekleme ekranı açılır.',adNote2:'Test sürümü: reklam yerine 15 saniyelik bir bekleme ekranı açılır, ödül sonunda verilir.',
  loseLines:['Olamaz…','Eyvah, yer kalmadı!','Az kalmıştı…'],nearly:'Çok yaklaştın!',hiveFull:'Kovan doldu',pctDone:'%{0} tamamlandı',loseTxt:'Yuvalardaki arıların toplayabileceği renk kalmadı. Devam edersen ilerlemen korunur.',
  adSlot:'Reklam izle, +1 yuva ile devam et',honeySlot:'{0} bal ile +1 yuva',honeyClear:'{0} bal ile bir rengi sil',retryLife:'Tekrar dene (1 can gider)',homeLife:'Ana sayfa (1 can gider)',
  rest:'Biraz dinlenelim…',noLivesT:'Canın kalmadı',nextLife:'Bir sonraki can {0} sonra dolacak.',adLife:'Reklam izle, +1 can',honeyLives:'{0} bal ile canları doldur',miniSoon:'Mini oyunlar (sıradaki adım)',
@@ -1050,7 +1057,7 @@ tr:{brand:'Petek Ustası',mascot:'Vızvız',langBtn:'TR',home:'Ana sayfa',lives:
  cleared:'Renk tahtadan silindi',lockedPick:'Kilitli sıradan arı alınamaz',tapSlotBee:'Arısı kalan bir yuvaya dokun',slotEmpty:'Bu yuvanın arısı kalmadı, başka yuva seç',aimSet:'Hedef verildi',
  homeLines:['Hadi, çiçekler bizi bekliyor!','Bugün hangi resmi toplayalım?','Vız vız, hazır mısın?'],needHoney:'Bunun için {0} bal gerekiyor. Şu an {1} balın var.',needClear:'Bir rengi silmek için {0} bal gerekiyor.',needLives:'Canları doldurmak için {0} bal gerekiyor.',
  starterTag:'Tek seferlik · %60 indirim',starter:'Başlangıç paketi',starterD:'{0} bal + canlar dolu + 60 dk 2x hız',jarS:'Küçük kavanoz',jarM:'Orta kavanoz',jarL:'Büyük kavanoz',more:'{0} bal (%{1} fazla)',popular:'En popüler',
- noads:'Reklamsız oyna',noadsD:'Ara reklamlar kalkar. Ödüllü reklamlar isteğe bağlı kalır.',free:'Ücretsiz bal',freeD:'Kısa bir reklam izle, {0} bal kazan',adBtn:'Reklam',shopNote:'Test modu: gerçek ödeme alınmaz, ödül doğrudan verilir. Fiyatlar öneridir.',close:'Kapat',bought:'Alındı',
+ noads:'Reklamsız oyna',noadsD:'Ara reklamlar kalkar. Ödüllü reklamlar isteğe bağlı kalır.',free:'Ücretsiz bal',freeD:'Kısa bir reklam izle, {0} bal kazan',adBtn:'Reklam',shopNote:'Test sürümü: gerçek satın alma yok. Paketlere dokunman sadece ilgi olarak kaydedilir. Fiyatlar öneridir.',buyTest:'Test sürümünde gerçek satın alma yok. İlgin kaydedildi, teşekkürler!',adTag:'Reklam',adBody:'Test sürümü: yayındaki oyunda burada kısa bir video reklam olacak.',adWait:'Ödül {0} sn sonra',adSkip:'Vazgeç (ödül yok)',adGot:'Ödülünü aldın!',close:'Kapat',bought:'Alındı',
  gotIt:'Anladım',howTo:'Nasıl oynanır',howToTxt:'Kuralları ve engelleri yeniden gör.',newThing:'Yeni!',
  tutBasicsT:'Nasıl oynanır?',tutBasics:['Aşağıdaki sıralardan birine dokun: o renkteki arı sürüsü yuvaya geçer.','Arılar tahtanın etrafından dolaşır ve kendi rengindeki altıgenleri dıştan içe toplar.','Yuvalar dolarsa ve hiçbir arı çalışamazsa bölüm biter. Kenarda rengi görünen sırayı seç.'],
  tutHiddenT:'Mühürlü petekler',tutHidden:['Bazı bölümlerde peteklerin bir kısmı mumla mühürlü. Altında hangi renk olduğu görünmez.','Mühürlü bir hücrenin yanı toplanınca mühür açılır ve rengi görünür.','Mühürler genelde iki rengin buluştuğu yerdedir. Arını göndermeden önce bunu hesaba kat.'],
@@ -1081,7 +1088,7 @@ en:{brand:'Hive Master',mascot:'Buzzy',langBtn:'EN',home:'Home',lives:'Lives',ho
  waiting:'waiting',hive:'HIVE',hint1:'Tap the row whose colour is on the edge',loading:'Getting the flowers ready…',errT:'Something went wrong',errTxt:'The level could not be prepared.',retry:'Try again',
  unlocked:'Unlocked!',locked:'This row is locked: free the key',linkBlocked:'Linked bees must all be at the front',x2over:'Your 2x time is used up',auto2:'No bees left in line: auto 3x',
  winLines:['Hooray!','Amazing!','Sweet as honey!','Buzz buzz, super!'],collected:'{0} collected!',tierReward:'{0} level reward',streakReward:'Streak bonus ({0} in a row)',x2time:'2x speed time',plusHoney:'+{0} honey',plusMin:'+{0} min',
- doubleAd:'Watch an ad to double your honey (+{0})',doubled:'Honey doubled',next:'Next level',adNote:'In this prototype the ad button gives the reward directly.',adNote2:'In this prototype the ad button gives the reward directly. The released game plays a rewarded ad.',
+ doubleAd:'Watch an ad to double your honey (+{0})',doubled:'Honey doubled',next:'Next level',adNote:'Test version: a 15-second wait screen stands in for the ad.',adNote2:'Test version: a 15-second wait screen stands in for the ad; the reward comes at the end.',
  loseLines:['Oh no…','Oops, out of room!','So close…'],nearly:'You were so close!',hiveFull:'The hive is full',pctDone:'{0}% done',loseTxt:'The bees in your slots have no colour left to collect. If you continue, your progress is kept.',
  adSlot:'Watch an ad, continue with +1 slot',honeySlot:'+1 slot for {0} honey',honeyClear:'Clear one colour for {0} honey',retryLife:'Try again (costs 1 life)',homeLife:'Home (costs 1 life)',
  rest:'Let’s rest a bit…',noLivesT:'Out of lives',nextLife:'Next life in {0}.',adLife:'Watch an ad, +1 life',honeyLives:'Refill lives for {0} honey',miniSoon:'Mini games (coming next)',
@@ -1090,7 +1097,7 @@ en:{brand:'Hive Master',mascot:'Buzzy',langBtn:'EN',home:'Home',lives:'Lives',ho
  cleared:'Colour cleared from the board',lockedPick:'You can’t take a bee from a locked row',tapSlotBee:'Tap a slot that still has bees',slotEmpty:'That slot has no bees left, pick another',aimSet:'Target set',
  homeLines:['Come on, the flowers are waiting!','Which picture shall we collect today?','Buzz buzz, ready?'],needHoney:'You need {0} honey for this. You have {1}.',needClear:'Clearing a colour costs {0} honey.',needLives:'Refilling lives costs {0} honey.',
  starterTag:'One-time · 60% off',starter:'Starter pack',starterD:'{0} honey + full lives + 60 min 2x speed',jarS:'Small jar',jarM:'Medium jar',jarL:'Big jar',more:'{0} honey ({1}% extra)',popular:'Most popular',
- noads:'Play without ads',noadsD:'Interstitial ads go away. Rewarded ads stay optional.',free:'Free honey',freeD:'Watch a short ad, get {0} honey',adBtn:'Ad',shopNote:'Test mode: no real payment is taken, the reward is given directly. Prices are suggestions.',close:'Close',bought:'Done',
+ noads:'Play without ads',noadsD:'Interstitial ads go away. Rewarded ads stay optional.',free:'Free honey',freeD:'Watch a short ad, get {0} honey',adBtn:'Ad',shopNote:'Test version: no real purchases. Tapping a pack only records your interest. Prices are suggestions.',buyTest:'There are no real purchases in the test version. Your interest was recorded, thank you!',adTag:'Ad',adBody:'Test version: the released game shows a short video ad here.',adWait:'Reward in {0} s',adSkip:'Skip (no reward)',adGot:'Reward collected!',close:'Close',bought:'Done',
  gotIt:'Got it',howTo:'How to play',howToTxt:'See the rules and obstacles again.',newThing:'New!',
  tutBasicsT:'How to play',tutBasics:['Tap one of the rows below: that colour’s bee swarm moves into a slot.','The bees fly around the board and collect hexagons of their colour from the outside in.','If the slots fill up and no bee can work, the level is over. Pick a row whose colour shows on the edge.'],
  tutHiddenT:'Sealed cells',tutHidden:['In some levels part of the honeycomb is sealed with wax. You can’t see the colour underneath.','When a cell next to a seal is collected, the seal opens and the colour shows.','Seals usually sit where two colours meet. Keep that in mind before sending your bees.'],
@@ -1121,7 +1128,7 @@ de:{brand:'Wabenmeister',mascot:'Summsi',langBtn:'DE',home:'Startseite',lives:'L
  waiting:'wartet',hive:'STOCK',hint1:'Tippe auf die Reihe, deren Farbe am Rand liegt',loading:'Die Blumen werden vorbereitet…',errT:'Etwas ist schiefgelaufen',errTxt:'Das Level konnte nicht vorbereitet werden.',retry:'Nochmal versuchen',
  unlocked:'Entsperrt!',locked:'Diese Reihe ist gesperrt: leg den Schlüssel frei',linkBlocked:'Verbundene Bienen müssen alle vorne stehen',x2over:'Deine 2x-Zeit ist aufgebraucht',auto2:'Keine Bienen mehr in der Reihe: auto 3x',
  winLines:['Juhu!','Klasse!','Honigsüß!','Summ summ, super!'],collected:'{0} gesammelt!',tierReward:'Belohnung: {0}',streakReward:'Serienbonus ({0} in Folge)',x2time:'2x-Tempo-Zeit',plusHoney:'+{0} Honig',plusMin:'+{0} Min.',
- doubleAd:'Werbung ansehen und Honig verdoppeln (+{0})',doubled:'Honig verdoppelt',next:'Nächstes Level',adNote:'In diesem Prototyp gibt der Werbe-Button die Belohnung direkt.',adNote2:'In diesem Prototyp gibt der Werbe-Button die Belohnung direkt. In der fertigen Version startet ein Video.',
+ doubleAd:'Werbung ansehen und Honig verdoppeln (+{0})',doubled:'Honig verdoppelt',next:'Nächstes Level',adNote:'Testversion: Statt Werbung erscheint ein 15-Sekunden-Warte-Bildschirm.',adNote2:'Testversion: Statt Werbung erscheint ein 15-Sekunden-Warte-Bildschirm; die Belohnung gibt es am Ende.',
  loseLines:['Oh nein…','Hoppla, kein Platz mehr!','Fast geschafft…'],nearly:'Du warst so nah dran!',hiveFull:'Der Stock ist voll',pctDone:'{0} % geschafft',loseTxt:'Die Bienen in deinen Plätzen finden keine Farbe mehr. Wenn du weitermachst, bleibt dein Fortschritt erhalten.',
  adSlot:'Werbung ansehen, mit +1 Platz weiter',honeySlot:'+1 Platz für {0} Honig',honeyClear:'Eine Farbe entfernen für {0} Honig',retryLife:'Nochmal (kostet 1 Leben)',homeLife:'Startseite (kostet 1 Leben)',
  rest:'Kurze Pause…',noLivesT:'Keine Leben mehr',nextLife:'Nächstes Leben in {0}.',adLife:'Werbung ansehen, +1 Leben',honeyLives:'Leben auffüllen für {0} Honig',miniSoon:'Minispiele (kommt bald)',
@@ -1130,7 +1137,7 @@ de:{brand:'Wabenmeister',mascot:'Summsi',langBtn:'DE',home:'Startseite',lives:'L
  cleared:'Farbe vom Feld entfernt',lockedPick:'Aus einer gesperrten Reihe geht das nicht',tapSlotBee:'Tippe auf einen Platz mit Bienen',slotEmpty:'Dieser Platz hat keine Bienen mehr, wähle einen anderen',aimSet:'Ziel gesetzt',
  homeLines:['Los, die Blumen warten!','Welches Bild sammeln wir heute?','Summ summ, bereit?'],needHoney:'Dafür brauchst du {0} Honig. Du hast {1}.',needClear:'Eine Farbe zu entfernen kostet {0} Honig.',needLives:'Leben auffüllen kostet {0} Honig.',
  starterTag:'Einmalig · 60 % Rabatt',starter:'Starterpaket',starterD:'{0} Honig + volle Leben + 60 Min. 2x-Tempo',jarS:'Kleines Glas',jarM:'Mittleres Glas',jarL:'Großes Glas',more:'{0} Honig ({1} % extra)',popular:'Beliebt',
- noads:'Ohne Werbung spielen',noadsD:'Zwischenwerbung entfällt. Belohnungsvideos bleiben freiwillig.',free:'Gratis-Honig',freeD:'Kurze Werbung ansehen, {0} Honig bekommen',adBtn:'Video',shopNote:'Testmodus: Es wird nichts berechnet, die Belohnung kommt direkt. Preise sind Vorschläge.',close:'Schließen',bought:'Erhalten',
+ noads:'Ohne Werbung spielen',noadsD:'Zwischenwerbung entfällt. Belohnungsvideos bleiben freiwillig.',free:'Gratis-Honig',freeD:'Kurze Werbung ansehen, {0} Honig bekommen',adBtn:'Video',shopNote:'Testversion: keine echten Käufe. Ein Tipp auf ein Paket zählt nur als Interesse. Preise sind Vorschläge.',buyTest:'In der Testversion gibt es keine echten Käufe. Dein Interesse wurde gezählt, danke!',adTag:'Werbung',adBody:'Testversion: Im fertigen Spiel läuft hier ein kurzes Werbevideo.',adWait:'Belohnung in {0} s',adSkip:'Abbrechen (keine Belohnung)',adGot:'Belohnung erhalten!',close:'Schließen',bought:'Erhalten',
  gotIt:'Verstanden',howTo:'So wird gespielt',howToTxt:'Regeln und Hindernisse noch einmal ansehen.',newThing:'Neu!',
  tutBasicsT:'So wird gespielt',tutBasics:['Tippe auf eine der Reihen unten: Der Bienenschwarm dieser Farbe zieht in einen Platz.','Die Bienen fliegen um das Feld und sammeln Waben ihrer Farbe von außen nach innen.','Wenn alle Plätze voll sind und keine Biene arbeiten kann, ist das Level vorbei. Wähle eine Reihe, deren Farbe am Rand liegt.'],
  tutHiddenT:'Versiegelte Waben',tutHidden:['In manchen Levels ist ein Teil der Waben mit Wachs versiegelt. Die Farbe darunter ist nicht zu sehen.','Wird ein Feld neben dem Siegel gesammelt, öffnet sich das Siegel und die Farbe erscheint.','Siegel liegen meist dort, wo zwei Farben aufeinandertreffen. Denk daran, bevor du deine Bienen schickst.'],
@@ -1253,6 +1260,17 @@ function hud(){
   document.getElementById('progBar').style.width=(100*G.cleared/G.total)+'%';
 }
 setInterval(hud,500);
+/* ================= test version: stand-in ads and no real purchases =================
+   A rewarded "ad" is a 15-second wait screen; the reward only comes at the end, skipping gives nothing. This keeps
+   tester behaviour close to the real game and measures how many players choose and finish ads (ad-start/-done/-skip). */
+const TEST_BUILD=true,AD_SECONDS=15;
+function showAd(place,onReward){track('ad-start/'+place);let left=AD_SECONDS,done=false;const ov=document.createElement('div');ov.className='adov';
+  ov.innerHTML=`<div class="adcard"><span class="adtag">${t('adTag')}</span><div class="adart">${mascot('happy')}</div><p>${t('adBody')}</p>
+    <div class="adbar"><i></i></div><b class="adleft">${t('adWait',left)}</b><button type="button" class="btn ghost adskip">${t('adSkip')}</button></div>`;
+  document.body.appendChild(ov);const bar=ov.querySelector('.adbar i'),lab=ov.querySelector('.adleft');requestAnimationFrame(()=>{bar.style.transition=`width ${AD_SECONDS}s linear`;bar.style.width='100%'});
+  const tick=setInterval(()=>{left--;lab.textContent=t('adWait',Math.max(0,left));if(left<=0){clearInterval(tick);if(done)return;done=true;track('ad-done/'+place);lab.textContent=t('adGot');sfx('coin');
+      setTimeout(()=>{ov.remove();onReward&&onReward()},450)}},1000);
+  ov.querySelector('.adskip').onclick=()=>{if(done)return;done=true;clearInterval(tick);track('ad-skip/'+place);ov.remove()}}
 /* ================= celebration effects =================
    Small DOM/CSS animations on a layer above everything (pointer-events off): rays and sparkles, honey coins flying to
    the honey counter while it counts up, a gift box that opens on the daily reward, a big star for album stars and a
@@ -1429,7 +1447,7 @@ function win(){
       <button class="btn ghost" id="mNext" type="button">${t('next')}</button><button class="btn ghost" id="mHome" type="button">${t('home')}</button>
       <p class="note">${t('adNote')}</p>`);
     setTimeout(()=>{fxWin();fxCoins('#rwRow','honey',h0,save.honey,Math.min(14,6+Math.round((base+bonus)/12)))},250);
-    document.getElementById('mDouble').onclick=e=>{const a=save.honey;save.honey+=base+bonus;persist();e.target.disabled=true;e.target.textContent=t('doubled');fxCoins(e.target,'honey',a,save.honey,10)};
+    document.getElementById('mDouble').onclick=e=>{const btn=e.currentTarget;showAd('win-double',()=>{const a=save.honey;save.honey+=base+bonus;persist();btn.disabled=true;btn.textContent=t('doubled');fxCoins(btn,'honey',a,save.honey,10)})};
     document.getElementById('mHome').onclick=()=>{G.state='done';showHome()};
     drawShape(document.getElementById('winPic'),G,170);
     document.getElementById('mNext').onclick=()=>startLevel(G.L+1);
@@ -1447,7 +1465,7 @@ function lose(){
     <button class="btn ghost" id="mQuit" type="button">${t('retryLife')}</button><button class="btn ghost" id="mQuitHome" type="button">${t('homeLife')}</button>
     <p class="note">${t('adNote2')}</p>`);
   const cont=()=>{addSlot();G.state='play';G.stuckT=0;closeModal();playMusic('game')};
-  if(canAdd){document.getElementById('mAd').onclick=cont;document.getElementById('mHoney').onclick=()=>{if(spend(COST.slot))cont()}}
+  if(canAdd){document.getElementById('mAd').onclick=()=>showAd('lose-slot',cont);document.getElementById('mHoney').onclick=()=>{if(spend(COST.slot))cont()}}
   document.getElementById('mRescue').onclick=()=>{if(save.honey<COST.clear){openShop(t('needClear',fmt(COST.clear)));return}G.state='play';G.stuckT=-2;closeModal();setMode('clear');playMusic('game')};
   const giveUp=()=>{track('level-quit/'+(G.L+1));loseLife();save.streak=0;save.inLevel=null;persist();hud()};
   document.getElementById('mQuit').onclick=()=>{const L=G.L;giveUp();startLevel(L)};
@@ -1460,7 +1478,7 @@ function showNoLives(L){
     <button class="btn ghost" type="button" disabled>${t('miniSoon')}</button><button class="btn ghost" id="nlHome" type="button">${t('home')}</button>`);
   document.getElementById('nlHome').onclick=()=>{showHome()};
   modalTick=setInterval(()=>{syncLives();const e=document.getElementById('nlT');if(!e||modal.hidden){clearInterval(modalTick);return}e.textContent=lifeLeft();if(save.lives>0){closeModal();startLevel(L)}},1000);
-  document.getElementById('nlAd').onclick=()=>{save.lives=Math.min(MAX_LIVES,save.lives+1);persist();closeModal();startLevel(L)};
+  document.getElementById('nlAd').onclick=()=>showAd('life',()=>{save.lives=Math.min(MAX_LIVES,save.lives+1);persist();closeModal();startLevel(L)});
   document.getElementById('nlHoney').onclick=()=>{if(save.honey<COST.lives){openShop(t('needLives',fmt(COST.lives)));return}spend(COST.lives);save.lives=MAX_LIVES;save.lifeTs=Date.now();persist();closeModal();startLevel(L)};
 }
 
@@ -1819,7 +1837,7 @@ function showDaily(){const idx=save.dailyIdx||0,ready=!!save.dailyReady;
   const claim=m=>{const r=DAILY[idx],h0=save.honey;grant(r,m);save.dailyReady=false;save.dailyClaim=today;save.dailyIdx=(idx+1)%7;persist();closeModal();
     honeyShown=h0;homeHud();const prizes=['h','x2','inf'].filter(k=>r[k]).map(k=>ICS[k]);
     fxGift(prizes,()=>{toast(rewardText(r,m));if(save.honey>h0)fxCoins('#fx','hHoney',h0,save.honey,10);else{honeyShown=null;homeHud()}})};
-  if(ready){document.getElementById('dClaimAd').onclick=()=>claim(2);document.getElementById('dClaim').onclick=()=>claim(1)}else document.getElementById('dClose').onclick=closeModal}
+  if(ready){document.getElementById('dClaimAd').onclick=()=>showAd('daily-double',()=>claim(2));document.getElementById('dClaim').onclick=()=>claim(1)}else document.getElementById('dClose').onclick=closeModal}
 /* home background: a night meadow with flowers, a faint honeycomb sky and drifting fireflies */
 /* spring meadow behind the home pages: soft sky, sun, drifting clouds, green hills full of flowers and a few bees */
 function buildHomeBg(){const r=mulberry32(7);let fl='';
@@ -2049,6 +2067,8 @@ function openShop(reason){
   openModal(`<h2>${t('shopT')}</h2>${reason?`<p>${reason}</p>`:''}<div class="shop">${packs.map(p=>`<div class="pack${p.best?' best':''}">${JAR}<div>${p.tag?`<span class="tag">${p.tag}</span>`:''}<b>${p.name}</b><span>${p.desc}</span></div><button type="button" data-pack="${p.id}">${p.price}</button></div>`).join('')}</div>
     <p class="note">${t('shopNote')}</p><button class="btn ghost" id="shopClose" type="button">${t('close')}</button>`);
   card.querySelectorAll('[data-pack]').forEach(b=>b.onclick=()=>{const id=b.dataset.pack;track('buy-tap/'+id);
+    if(TEST_BUILD&&id!=='x2_h'&&id!=='ad'){toast(t('buyTest'));sfx('tap');b.disabled=true;b.textContent='✓';return}
+    if(id==='ad'){showAd('shop-honey',()=>{save.honey+=60;persist();hud();homeHud();sfx('coin');b.disabled=true;b.textContent=t('bought')});return}
     if(id==='starter'){save.honey+=1500;save.lives=MAX_LIVES;save.lifeTs=Date.now();save.bank2x+=3600;save.starter=true}
     else if(id==='s')save.honey+=1000;else if(id==='m')save.honey+=2800;else if(id==='l')save.honey+=6500;
     else if(id==='inf60')save.infUntil=Math.max(Date.now(),save.infUntil||0)+3600000;
@@ -2092,7 +2112,7 @@ persist();if(bootMsg)setTimeout(()=>toast(bootMsg),600);
 // retention: one event per day the game is opened, bucketed by days since the first visit
 {const dnow=new Date(),tday=dnow.getFullYear()+'-'+(dnow.getMonth()+1)+'-'+dnow.getDate();if(!save.first)save.first=Date.now();
   if(save.seenDay!==tday){save.seenDay=tday;const d=Math.floor((Date.now()-save.first)/864e5);track('open/day-'+(d<=3?d:d<=7?'4-7':d<=14?'8-14':d<=30?'15-30':'30+'));persist()}}
-if('serviceWorker' in navigator&&ON_WEB)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+if('serviceWorker' in navigator&&PLATFORM==='web')window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 applyLang();showHome();requestAnimationFrame(frame);{const bd=document.getElementById('albumBadge');if(bd)bd.hidden=!ALBUMS.some(albClaimable)}
 if(save.dailyReady)setTimeout(()=>{if(!home.hidden&&modal.hidden)showDaily()},bootMsg?1900:700);
 </script>
