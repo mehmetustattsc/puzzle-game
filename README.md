@@ -6,6 +6,8 @@ Arılarla renkli petekleri dıştan içe toplayıp resmi tamamladığın bir bul
 **Oyna / Play:** https://mehmetustattsc.github.io/puzzle-game/
 (Telefonda "Ana ekrana ekle" ile uygulama gibi kurulur, internetsiz de çalışır.)
 
+**itch.io:** https://mehmet-usta.itch.io/hive-master
+
 ## Durum
 Web prototipi, test aşaması. Sonraki adımlar: oyuncu testleri ve D1/D7 ölçümü → Android (Capacitor) + AdMob + Google Play Billing → Impressum / gizlilik → soft launch.
 
