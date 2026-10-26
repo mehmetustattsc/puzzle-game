@@ -1,0 +1,30 @@
+name: Hata bildir / Report a bug
+description: Oyunda bir şey bozuk mu? / Something broken in the game?
+title: "[Hata] "
+labels: [bug]
+body:
+  - type: input
+    id: level
+    attributes:
+      label: Bölüm / Level
+      placeholder: "ör. 23"
+  - type: textarea
+    id: what
+    attributes:
+      label: Ne oldu? / What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Ne olmasını bekliyordun? / What did you expect?
+  - type: input
+    id: device
+    attributes:
+      label: Cihaz ve tarayıcı / Device and browser
+      placeholder: "ör. iPhone 13, Safari"
+  - type: textarea
+    id: shot
+    attributes:
+      label: Ekran görüntüsü / Screenshot
+      description: Görseli buraya sürükleyip bırakabilirsin. / Drag an image here.

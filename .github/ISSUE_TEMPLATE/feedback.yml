@@ -1,0 +1,32 @@
+name: Test geri bildirimi / Playtest feedback
+description: Oyunu oynadın mı? Düşüncelerini paylaş. / Played the game? Tell us how it felt.
+title: "[Geri bildirim] "
+labels: [feedback]
+body:
+  - type: input
+    id: reached
+    attributes:
+      label: Hangi bölüme kadar geldin? / Highest level reached
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: Zorluk nasıldı? / How hard was it?
+      options:
+        - Çok kolay / Too easy
+        - Biraz kolay / A bit easy
+        - Tam kıvamında / Just right
+        - Biraz zor / A bit hard
+        - Haksız derecede zor / Unfairly hard
+  - type: dropdown
+    id: again
+    attributes:
+      label: Yarın tekrar oynar mısın? / Would you play again tomorrow?
+      options: [Evet / Yes, Belki / Maybe, Hayır / No]
+  - type: textarea
+    id: stopped
+    attributes:
+      label: Neden bıraktın? / Why did you stop?
+  - type: textarea
+    id: liked
+    attributes:
+      label: En çok neyi sevdin, neyi sevmedin? / Best and worst part

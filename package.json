@@ -1,0 +1,15 @@
+{
+  "name": "petek-ustasi",
+  "private": true,
+  "version": "0.9.0",
+  "description": "Petek Ustası – hexagon colour puzzle (web prototype)",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/generator.test.mjs",
+    "test:smoke": "node tests/smoke.test.mjs",
+    "serve": "npx --yes http-server -p 8080 -c-1 ."
+  },
+  "devDependencies": {
+    "playwright": "1.56.0"
+  }
+}
