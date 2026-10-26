@@ -958,7 +958,7 @@ setTimeout(async()=>{try{if(!window.claude||typeof window.claude.use!=='function
    Only on the real web address and only once a GoatCounter code is filled in below. GoatCounter sets no cookies and
    stores no personal data. Events: app opens with days since first visit (retention), level start/win/lose/quit,
    shop opens and purchase taps (test mode, to measure interest). */
-const GC_CODE='';// e.g. 'petekustasi' for https://petekustasi.goatcounter.com
+const GC_CODE='mehmetusta';// e.g. 'petekustasi' for https://petekustasi.goatcounter.com
 const ON_WEB=/(\.github\.io|\.pages\.dev)$/.test(location.hostname);
 let gcQ=[];
 function track(name){try{if(!GC_CODE||!ON_WEB)return;const gc=window.goatcounter;if(gc&&gc.count)gc.count({path:name,title:name,event:true});else gcQ.push(name)}catch(e){}}

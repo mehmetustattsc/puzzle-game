@@ -37,7 +37,7 @@ npm run serve        # http://localhost:8080
 Bölüm üreticisi değiştiğinde `index.html` içindeki `LV_VER` artırılmalı (cihazlardaki hazır bölümler yenilenir).
 
 ## Ölçüm (isteğe bağlı)
-Çerezsiz [GoatCounter](https://www.goatcounter.com) desteği hazır: hesap açıp kodu `index.html` içindeki `GC_CODE` alanına yaz.
+Çerezsiz [GoatCounter](https://www.goatcounter.com) açık: sonuçlar https://mehmetusta.goatcounter.com adresinde. Kod `index.html` içindeki `GC_CODE` alanında; yalnızca GitHub Pages adresinde sayım yapılır.
 Olaylar: açılış günü (D0, D1, D2-3, D4-7…), bölüm başlangıç/kazanma/kaybetme/bırakma, dükkan açılışı ve satın alma dokunuşları.
 
 ## Geri bildirim
