@@ -8,7 +8,9 @@ Owner: Mehmet (Germany). Talk to him in **Turkish**. Goal: a Colony-Flow-like hy
     `Peeler`, `simulateReal` (real-time replay solver), `routeSearch`, `makeLevel`. This part also runs in a Web Worker
     (`GEN_SRC`) and in the tests, so it must stay free of DOM access.
   - **Game/UI** after the marker: save/lives, i18n (`I18N` TR/EN/DE, `t()`, `nameOf()`), drawing, input, home pages,
-    album, team page, shop, audio, cloud save (claude.ai artifact `db`) + save code, analytics hook (`GC_CODE`).
+    album, team page, shop, audio, cloud save (claude.ai artifact `db`) + save code, analytics (`GC_CODE`, GoatCounter `mehmetusta`),
+    error reports (`SENTRY_DSN`, Sentry org `usta-jb`, project `petek-ustasi`, EU region https://de.sentry.io; use the Sentry
+    connector to read issues). Analytics and Sentry only run on the GitHub Pages host (`ON_WEB`).
 - Levels are deterministic per level number (`mulberry32(4242+L*7919)`). Any generator change: bump `LV_VER`.
 - Acceptance rules in `makeLevel` (smart wins; careless / left-to-right (`'seq'`) players must lose depending on tier),
   with a deterministic work budget (`W_STRICT`, `W_SEQ`). Keep generation under ~5 s per level on a laptop.

@@ -40,6 +40,9 @@ Bölüm üreticisi değiştiğinde `index.html` içindeki `LV_VER` artırılmal�
 Çerezsiz [GoatCounter](https://www.goatcounter.com) açık: sonuçlar https://mehmetusta.goatcounter.com adresinde. Kod `index.html` içindeki `GC_CODE` alanında; yalnızca GitHub Pages adresinde sayım yapılır.
 Olaylar: açılış günü (D0, D1, D2-3, D4-7…), bölüm başlangıç/kazanma/kaybetme/bırakma, dükkan açılışı ve satın alma dokunuşları.
 
+## Hata takibi
+Oyuncuların cihazlarındaki hatalar [Sentry](https://usta-jb.sentry.io/projects/petek-ustasi/)'ye (AB sunucusu) gider; yalnızca GitHub Pages adresinde, kişisel veri olmadan. Test: oyunu `?sentrytest=1` ile aç.
+
 ## Geri bildirim
 Hata ve test geri bildirimi için **Issues → New issue** altındaki formları kullan.
 

@@ -918,7 +918,7 @@ function mainThreadGen(L,job){setTimeout(()=>{try{job.resolve(makeLevel(L))}catc
 try{if(GEN_SRC&&typeof Worker!=='undefined'){
   genWorker=new Worker(URL.createObjectURL(new Blob([GEN_SRC+'\nonmessage=e=>{postMessage({L:e.data,lv:makeLevel(e.data)})};'],{type:'text/javascript'})));
   genWorker.onmessage=e=>{const j=levelJobs.get(e.data.L);if(j&&!j.done)j.resolve(e.data.lv);else if(e.data.lv)cachePut(e.data.L,e.data.lv)};
-  genWorker.onerror=()=>{genWorker=null;levelJobs.forEach((j,L)=>{if(!j.done)mainThreadGen(L,j)})};
+  genWorker.onerror=ev=>{try{typeof reportError==='function'&&reportError(new Error('level worker failed: '+(ev&&ev.message||'unknown')))}catch(e){}genWorker=null;levelJobs.forEach((j,L)=>{if(!j.done)mainThreadGen(L,j)})};
 }}catch(e){genWorker=null}
 /* prepared levels are also kept on the device, so opening the app never waits for a level */
 const LV_KEY='petek-lv-',LV_VER=12;
@@ -964,6 +964,22 @@ let gcQ=[];
 function track(name){try{if(!GC_CODE||!ON_WEB)return;const gc=window.goatcounter;if(gc&&gc.count)gc.count({path:name,title:name,event:true});else gcQ.push(name)}catch(e){}}
 if(GC_CODE&&ON_WEB){const sc=document.createElement('script');sc.async=true;sc.src='https://gc.zgo.at/count.js';sc.dataset.goatcounter='https://'+GC_CODE+'.goatcounter.com/count';sc.dataset.goatcounterSettings='{"no_onload":true}';
   sc.onload=()=>{const q=gcQ;gcQ=[];q.forEach(track)};document.head.appendChild(sc)}
+/* ================= error reports (Sentry, EU region) =================
+   Only on the real web address. The SDK is fetched after the page has loaded; errors that happen before that are kept
+   and sent once it is ready. No personal data: just the error, browser, game level and language.
+   Open the game with ?sentrytest=1 to send a test error. */
+const SENTRY_DSN='https://3abdc5261f8c23a6bc843445c8eeb81f@o4512322025226240.ingest.de.sentry.io/4512322032042064',APP_VERSION='0.9.0';
+const errBuf=[];
+function reportError(err,extra){try{const S=window.Sentry;if(S&&S.captureException)S.captureException(err,extra?{extra}:undefined);else if(errBuf.length<20)errBuf.push([err,extra])}catch(e){}}
+if(ON_WEB&&SENTRY_DSN){
+  window.addEventListener('error',e=>{if(!(window.Sentry&&window.Sentry.captureException))reportError(e.error||new Error(e.message))});
+  window.addEventListener('unhandledrejection',e=>{if(!(window.Sentry&&window.Sentry.captureException))reportError(e.reason instanceof Error?e.reason:new Error(String(e.reason)))});
+  window.addEventListener('load',()=>{const sc=document.createElement('script');sc.src='https://browser.sentry-cdn.com/11.4.0/bundle.min.js';sc.crossOrigin='anonymous';sc.async=true;
+    sc.onload=()=>{try{window.Sentry.init({dsn:SENTRY_DSN,release:'petek-ustasi@'+APP_VERSION,environment:'production',sendDefaultPii:false,
+        beforeSend(ev){try{ev.tags=Object.assign({},ev.tags,{game_level:G?String(G.L+1):'home',saved_level:String(save.level+1),lang:lang(),lv_ver:String(LV_VER)})}catch(e){}return ev}});
+      errBuf.splice(0).forEach(([e,x])=>window.Sentry.captureException(e,x?{extra:x}:undefined));
+      if(/[?&]sentrytest=1/.test(location.search))setTimeout(()=>{throw new Error('Petek Ustası Sentry test error')},500)}catch(e){}};
+    document.head.appendChild(sc)})}
 const saveCode=()=>'PU1:'+btoa(unescape(encodeURIComponent(JSON.stringify(save))));
 function readCode(txt){try{const m=String(txt).trim().replace(/\s+/g,'');if(!m.startsWith('PU1:'))return null;const o=JSON.parse(decodeURIComponent(escape(atob(m.slice(4)))));return o&&typeof o==='object'&&typeof o.level==='number'?o:null}catch(e){return null}}
 function syncLives(){const now=Date.now();if(save.lives>=MAX_LIVES){save.lives=MAX_LIVES;return}
