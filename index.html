@@ -1025,7 +1025,7 @@ if(GC_CODE&&ON_WEB){const sc=document.createElement('script');sc.async=true;sc.s
    Only on the real web address. The SDK is fetched after the page has loaded; errors that happen before that are kept
    and sent once it is ready. No personal data: just the error, browser, game level and language.
    Open the game with ?sentrytest=1 to send a test error. */
-const SENTRY_DSN='https://3abdc5261f8c23a6bc843445c8eeb81f@o4512322025226240.ingest.de.sentry.io/4512322032042064',APP_VERSION='0.9.0';
+const SENTRY_DSN='https://3abdc5261f8c23a6bc843445c8eeb81f@o4512322025226240.ingest.de.sentry.io/4512322032042064',APP_VERSION='0.9.1';
 const errBuf=[];
 function reportError(err,extra){try{const S=window.Sentry;if(S&&S.captureException)S.captureException(err,extra?{extra}:undefined);else if(errBuf.length<20)errBuf.push([err,extra])}catch(e){}}
 if(ON_WEB&&SENTRY_DSN){
@@ -1033,6 +1033,7 @@ if(ON_WEB&&SENTRY_DSN){
   window.addEventListener('unhandledrejection',e=>{if(!(window.Sentry&&window.Sentry.captureException))reportError(e.reason instanceof Error?e.reason:new Error(String(e.reason)))});
   window.addEventListener('load',()=>{const sc=document.createElement('script');sc.src='https://browser.sentry-cdn.com/11.4.0/bundle.min.js';sc.crossOrigin='anonymous';sc.async=true;
     sc.onload=()=>{try{window.Sentry.init({dsn:SENTRY_DSN,release:'petek-ustasi@'+APP_VERSION,environment:'production',sendDefaultPii:false,
+        ignoreErrors:[/Failed to start the audio device/i,/The AudioContext was not allowed to start/i],
         beforeSend(ev){try{ev.tags=Object.assign({},ev.tags,{game_level:G?String(G.L+1):'home',saved_level:String(save.level+1),lang:lang(),lv_ver:String(LV_VER),platform:PLATFORM})}catch(e){}return ev}});
       errBuf.splice(0).forEach(([e,x])=>window.Sentry.captureException(e,x?{extra:x}:undefined));
       if(/[?&]sentrytest=1/.test(location.search))setTimeout(()=>{throw new Error('Petek Ustası Sentry test error')},500)}catch(e){}};
@@ -1592,7 +1593,7 @@ function drawTile(x,y,w,h,b,alpha){
   ctx.globalAlpha=1;
 }
 function draw(){
-  ctx.clearRect(0,0,W,H);if(!G)return;const t=G.time,r=Lr.r;
+  ctx.clearRect(0,0,W,H);if(!G||!(Lr.boardH>0)||!(W>0))return;const t=G.time,r=Lr.r;
   drawBackdrop();
   // drifting pollen, visible through the cleared parts of the picture
   G.pollen.forEach(q=>{const x=8+q.u*(W-16),y=8+q.v*(Lr.boardH-16);ctx.globalAlpha=.25+.2*Math.sin(t*2+q.ph);ctx.fillStyle='#FFFFFF';ctx.beginPath();ctx.arc(x,y,q.r,0,7);ctx.fill()});ctx.globalAlpha=1;
@@ -1603,7 +1604,7 @@ function draw(){
     if(G.reveal>1){const f=(G.reveal-1)/0.6,bx=-W*0.4+f*W*1.8;ctx.save();rr(2,2,W-4,Lr.boardH-4,20);ctx.clip();const g=ctx.createLinearGradient(bx-60,0,bx+60,40);
       g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.5,'rgba(255,255,255,.45)');g.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,Lr.boardH);ctx.restore()}}
   else if(G.intro<1){G.cells.forEach((c,i)=>{const d=(G.maxR-c.r)/Math.max(1,G.maxR)*0.6+hash(c.r,c.c,3)*0.08,k=Math.max(0,Math.min(1,(G.intro-d)/0.32));if(k>0)drawCell(ctx,c,i,r,0.94*easeBack(k))})}
-  else{renderBoardCache(r);ctx.drawImage(bcv,0,0,W,Lr.boardH);
+  else{renderBoardCache(r);if(bcv.width>0&&bcv.height>0)ctx.drawImage(bcv,0,0,W,Lr.boardH);
     G.cells.forEach((c,i)=>{if(c.pop>0&&!c.cleared)drawCell(ctx,c,i,r,0.94+0.18*Math.sin(c.pop*Math.PI));
       if(c.res!=null&&!c.cleared){ctx.fillStyle=`rgba(255,255,255,${.25+.2*Math.sin(t*12)})`;hexPath(ctx,c.x,c.y,r*.45);ctx.fill()}})}
   G.pops.forEach(p=>{if(p.honey){ctx.globalAlpha=1-p.t;ctx.fillStyle='#F2A93B';ctx.font='800 14px "Baloo 2",system-ui';ctx.textAlign='center';ctx.fillText('+',p.x,p.y-Lr.ss*.6-p.t*20);ctx.globalAlpha=1;return}
@@ -2009,7 +2010,7 @@ let actx=null,sfxBus=null,musBus=null,noiseBuf=null;const lastT={};
 function ac(){try{if(!actx){actx=new(window.AudioContext||window.webkitAudioContext)();sfxBus=actx.createGain();sfxBus.gain.value=0.9;sfxBus.connect(actx.destination);
   musBus=actx.createGain();musBus.gain.value=0.5;musBus.connect(actx.destination);
   noiseBuf=actx.createBuffer(1,actx.sampleRate,actx.sampleRate);const d=noiseBuf.getChannelData(0);for(let k=0;k<d.length;k++)d[k]=Math.random()*2-1}
-  if(actx.state==='suspended'&&!document.hidden)actx.resume()}catch(e){actx=null}return actx}
+  if(actx.state==='suspended'&&!document.hidden){const pr=actx.resume();if(pr&&pr.catch)pr.catch(()=>{})}}catch(e){actx=null}return actx}
 function audioOn(){return ac()}
 function tone(f,d,type='sine',v=.12,delay=0,slide=0,bus){const a=ac();if(!a)return;const t=a.currentTime+delay,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(40,f*slide),t+d);
   g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.012);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.connect(g).connect(bus||sfxBus);o.start(t);o.stop(t+d+.03)}
@@ -2064,7 +2065,7 @@ function musicTick(){if(!actx||!music.cur||actx.state!=='running')return;const S
 function playMusic(name){music.want=name;if(save.musicOff||!name){music.cur=null;return}const a=ac();if(!a)return;
   if(music.cur!==name){music.cur=name;music.step=0;music.cycle=0;music.next=a.currentTime+0.1}
   if(!music.timer)music.timer=setInterval(musicTick,40)}
-document.addEventListener('visibilitychange',()=>{if(!actx)return;if(document.hidden)actx.suspend();else{actx.resume();music.next=actx.currentTime+0.1}});
+document.addEventListener('visibilitychange',()=>{if(!actx)return;if(document.hidden){const pr=actx.suspend();if(pr&&pr.catch)pr.catch(()=>{})}else{const pr=actx.resume();if(pr&&pr.catch)pr.catch(()=>{});music.next=actx.currentTime+0.1}});
 document.addEventListener('pointerdown',()=>{ac();if(music.want&&!music.cur&&!save.musicOff)playMusic(music.want)},{passive:true});
 document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('button'))sfx('click')});
 
@@ -2114,7 +2115,10 @@ let modalTick=0;
 function openModal(html){clearInterval(modalTick);card.innerHTML=html;modal.hidden=false;card.scrollTop=0}
 function closeModal(){clearInterval(modalTick);modal.hidden=true}
 let last=performance.now();
-function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;if(G&&home.hidden){update(dt);draw()}requestAnimationFrame(frame)}
+/* the loop re-schedules itself first, so one bad frame can never freeze the game; errors are reported once per kind */
+let frameErrs=new Set();
+function frame(now){requestAnimationFrame(frame);const dt=Math.min(.05,(now-last)/1000);last=now;
+  if(G&&home.hidden){try{update(dt);if(W>0&&H>0)draw()}catch(e){const key=String(e&&e.message).slice(0,80);if(!frameErrs.has(key)){frameErrs.add(key);reportError(e,{where:'frame'})}}}}
 resize();
 const _d=new Date(),today=_d.getFullYear()+'-'+String(_d.getMonth()+1).padStart(2,'0')+'-'+String(_d.getDate()).padStart(2,'0');
 syncLives();
